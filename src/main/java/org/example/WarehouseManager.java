@@ -15,16 +15,24 @@ public class WarehouseManager {
      * @param warehouseToAdd The warehouse to add
      * @throws java.lang.module.FindException If no warehouse exists with the ID
      */
-    public void addWarehouseToList(Warehouse warehouseToAdd) throws IllegalArgumentException {
-        boolean idExists = warehouses.stream()
-                .anyMatch((w -> w.getWarehouseNumber() == warehouseToAdd.getWarehouseNumber()));
+    public void addWarehouseToList(Warehouse warehouseToAdd) {
+        try {
+            boolean idExists = warehouses.stream()
+                    .anyMatch((w -> w.getWarehouseId() == warehouseToAdd.getWarehouseId()));
 
-        if (idExists) {
-            throw new IllegalArgumentException(("A warehouse with that id already exists"));
+            if (idExists) {
+                throw new IllegalArgumentException(("A warehouse with that id already exists"));
+            }
+            boolean nameExists = warehouses.stream()
+                    .anyMatch(w -> w.getWarehouseName().equalsIgnoreCase(warehouseToAdd.getWarehouseName()));
+            if (nameExists) {
+                throw new IllegalArgumentException("A warehouse with that name already exists.");
+            }
+            warehouses.add(warehouseToAdd);
+            System.out.println(warehouseToAdd + " has been added.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
         }
-
-        warehouses.add(warehouseToAdd);
-        System.out.println(warehouseToAdd + " has been added.");
     }
 
     /**
@@ -40,23 +48,14 @@ public class WarehouseManager {
      * Adds a product to the warehouse with the specified ID
      *
      * @param destinationWarehouse The ID of the warehouse to add a product to
-     * @param productToAdd    The product to add to the warehouse
+     * @param productToAdd         The product to add to the warehouse
      */
     public void addProductToWarehouse(Warehouse destinationWarehouse, Product productToAdd) {
-        for (Warehouse warehouse : warehouses) {
-            if (warehouse == destinationWarehouse) {
-                warehouse.addProductIntoWarehouse(productToAdd);
-                return;
-            }
-        }
+        destinationWarehouse.addProductIntoWarehouse(productToAdd);
     }
 
     public void removeProductFromWarehouse(Warehouse warehouse, Product productToRemove) {
-        for (var wh : warehouses) {
-            if (wh == (warehouse)) {
-                wh.removeProductByObject(productToRemove);
-            }
-        }
+        warehouse.removeProductByObject(productToRemove);
     }
 
     public void transferProductBetweenWarehouses(Warehouse sourceWarehouse, Warehouse destinationWarehouse, Product productToTransfer) {
@@ -65,62 +64,33 @@ public class WarehouseManager {
             return;
         }
 
-        if (!sourceWarehouse.containsProduct(productToTransfer)) {
+        int sourceAmount = sourceWarehouse.howManyInStock(productToTransfer);
+        if (sourceAmount <= 0) {
             System.out.println("The source warehouse does not have the specified product.");
             return;
         }
 
-        removeProductFromWarehouse(sourceWarehouse, productToTransfer); // Remove the product from the source warehouse
-        addProductToWarehouse(destinationWarehouse, productToTransfer); // Add the product to the destination warehouse
+        sourceWarehouse.removeProductByObject(productToTransfer);
+        destinationWarehouse.addProductIntoWarehouse(productToTransfer);
+
         System.out.println("Product transferred successfully.");
     }
 
-    public void printProductsInWarehouse(Warehouse warehouse) {
-        if (warehouse == null) {
-            System.out.println("Warehouse not found.");
-            return;
-        }
 
-        System.out.println("Products in " + warehouse.getWarehouseLocation() + ":");
-        warehouse.listAllProducts();
-    }
+    public void searchAndPrintProductInWarehouses(Product productToFind) {
+        boolean found = false;
 
-
-    public void printWarehouseStock(int id) {
-        for (var warehouse : warehouses) {
-            if (warehouse.getWarehouseNumber() == id) {
-                warehouse.listAllProducts();
+        for (Warehouse warehouse : warehouses) {
+            int amount = warehouse.howManyInStock(productToFind);
+            if (amount > 0) {
+                found = true;
+                System.out.println("There are " + amount + " " + productToFind.getProductName() +
+                        " available in " + warehouse.getWarehouseNameCapitalized());
             }
         }
 
-    }
-
-    public void printWarehouseStock(String location) {
-        for (var warehouse : warehouses) {
-            if (warehouse.getWarehouseLocation().equals(location)) {
-                warehouse.listAllProducts();
-            }
-        }
-
-    }
-
-    public void searchAllWarehousesForProduct(String name) {
-        for (var warehouse : warehouses) {
-            if (warehouse.searchForProduct(name.toLowerCase())) {
-                int amount = warehouse.howManyInStock(name);
-                System.out.println("There are " + amount + " " + name +
-                        " available in " + warehouse.getWarehouseLocation());
-            }
-        }
-    }
-
-    public void searchAllWarehousesForProduct(int number) {
-        for (var warehouse : warehouses) {
-            if (warehouse.searchForProduct(number)) {
-                int amount = warehouse.howManyInStock(number);
-                System.out.println("There are " + amount + " " + number +
-                        " available in " + warehouse.getWarehouseLocation());
-            }
+        if (!found) {
+            System.out.println("Product not found in any warehouse.");
         }
     }
 
@@ -135,7 +105,7 @@ public class WarehouseManager {
     public Warehouse getWarehouse(int number) throws FindException {
         // Filter all warehouses on ID
         Optional<Warehouse> optionalWarehouse = warehouses.stream()
-                .filter(w -> w.getWarehouseNumber() == number)
+                .filter(w -> w.getWarehouseId() == number)
                 .findFirst();
 
         // If there is a warehouse with the ID...
@@ -153,7 +123,7 @@ public class WarehouseManager {
         String locationLowerCase = location.toLowerCase();
         // Filter all warehouses on ID
         Optional<Warehouse> optionalWarehouse = warehouses.stream()
-                .filter(w -> w.getWarehouseLocation().equalsIgnoreCase(locationLowerCase))
+                .filter(w -> w.getWarehouseName().equalsIgnoreCase(locationLowerCase))
                 .findFirst();
 
         // If there is a warehouse with the ID...
@@ -167,6 +137,29 @@ public class WarehouseManager {
         throw new FindException("Warehouse with ID not found");
     }
 
+    public Warehouse getWarehouseFromIdOrName(String IdOrName) {
+
+        if (IdOrName.matches("\\d+")) {
+            int warehouseNumber = Integer.parseInt(IdOrName);
+            Warehouse warehouse = getWarehouse(warehouseNumber);
+
+            if (warehouse != null) {
+                return warehouse;
+            } else {
+                System.out.println("That warehouse cannot be found.");
+            }
+        } else {
+            Warehouse warehouse = getWarehouse(IdOrName.toLowerCase());
+            if (warehouse != null) {
+                return warehouse;
+            } else {
+                System.out.println("That warehouse cannot be found.");
+            }
+
+        }
+        return null;
+    }
+
 
     public void printAllWarehouses() {
         getAllWarehouses();
@@ -178,17 +171,9 @@ public class WarehouseManager {
     }
 
 
-    public void getProductsInWarehouse(Warehouse warehouse) {
-        for (Warehouse wh : warehouses) {
-            if (wh == warehouse) {
-                return;
-            }
-        }
-    }
-
     public Warehouse findWarehouse(int id) {
         for (Warehouse warehouse : warehouses) {
-            if (warehouse.getWarehouseNumber() == id) {
+            if (warehouse.getWarehouseId() == id) {
                 return warehouse;
             }
         }
@@ -197,7 +182,7 @@ public class WarehouseManager {
 
     public Warehouse findWarehouse(String name) {
         for (Warehouse warehouse : warehouses) {
-            if (warehouse.getWarehouseLocation().equalsIgnoreCase(name)) {
+            if (warehouse.getWarehouseName().equalsIgnoreCase(name)) {
                 return warehouse;
             }
         }
@@ -226,6 +211,41 @@ public class WarehouseManager {
         }
         return null; // Product not found
     }
+
+    public Product getProductByIdOrName(String productIdOrName) {
+        if (productIdOrName.matches("\\d+")) {
+            int productId = Integer.parseInt(productIdOrName);
+            var productToFind = findProduct(productId);
+            if (productToFind != null) {
+                return productToFind;
+            }
+
+        } else {
+
+            // Input is a name
+            return findProduct(productIdOrName);
+
+        }
+        return null;
+
+    }
+
+    public void adjustProductAmountInWarehouse(Warehouse warehouseToAdjust, Product productToAdjust, int newStockAmount) {
+        int currentStock = warehouseToAdjust.howManyInStock(productToAdjust);
+
+        if (newStockAmount > currentStock) {
+            // Add products to reach the new stock amount
+            for (int i = currentStock; i < newStockAmount; i++) {
+                warehouseToAdjust.addProductIntoWarehouse(productToAdjust);
+            }
+        } else if (newStockAmount < currentStock) {
+            // Remove products to reach the new stock amount
+            for (int i = currentStock; i > newStockAmount; i--) {
+                warehouseToAdjust.removeProductByObject(productToAdjust);
+            }
+        }
+    }
+
 
 }
 

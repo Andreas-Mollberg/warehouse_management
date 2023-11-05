@@ -1,39 +1,45 @@
 package org.example;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 
 public class Warehouse {
-    private int warehouseNumber;
-    private String warehouseLocation;
+    private int warehouseId;
+    private String warehouseName;
     private ArrayList<Product> products;
+    private Map<Product, Integer> productCounts;
 
-    public Warehouse(int warehouseNumber, String warehouseLocation) {
-        this.warehouseNumber = warehouseNumber;
-        this.warehouseLocation = warehouseLocation;
+    public Warehouse(int warehouseId, String warehouseName) {
+        this.warehouseId = warehouseId;
+        String firstLetter = warehouseName.substring(0, 1).toUpperCase();
+        String theRest = warehouseName.substring(1);
+        this.warehouseName = firstLetter + theRest;
         this.products = new ArrayList<>();
+        this.productCounts = new HashMap<>();
     }
 
-    public int getWarehouseNumber() {
-        return warehouseNumber;
+    public int getWarehouseId() {
+        return warehouseId;
     }
 
-    public void setWarehouseNumber(int warehouseNumber) {
-        this.warehouseNumber = warehouseNumber;
+    public void setWarehouseId(int warehouseId) {
+        this.warehouseId = warehouseId;
     }
 
-    public String getWarehouseLocation() {
-        return warehouseLocation.toLowerCase();
+    public String getWarehouseName() {
+        return warehouseName.toLowerCase();
     }
 
-    public void setWarehouseLocation(String warehouseLocation) {
-        this.warehouseLocation = warehouseLocation;
+    public void setWarehouseName(String warehouseName) {
+        this.warehouseName = warehouseName;
     }
 
     public void listAllProducts() {
-        for (var product : products) {
-            System.out.println(product);
-
+        for (Product product : products) {
+            int count = productCounts.getOrDefault(product, 0);
+            System.out.println(product + "\nAmount in stock: " + count + "\n");
         }
     }
 
@@ -48,7 +54,8 @@ public class Warehouse {
      */
     public void addProductIntoWarehouse(Product productToAdd) {
         products.add(productToAdd);
-
+        // Update the product count
+        productCounts.put(productToAdd, productCounts.getOrDefault(productToAdd, 0) + 1);
     }
 
     /**
@@ -63,9 +70,10 @@ public class Warehouse {
 
             if (product.getProductId() == id) {
                 products.remove(i);
+                // Update the product count
+                productCounts.put(product, productCounts.getOrDefault(product, 0) - 1);
                 return;
             }
-
         }
     }
 
@@ -75,7 +83,7 @@ public class Warehouse {
         for (int i = 0; i < products.size(); i++) {
             Product product = products.get(i);
 
-            if (product.getProductName().toLowerCase().equals(nameToSearchFor)) {
+            if (product.getProductName().equalsIgnoreCase(nameToSearchFor)) {
                 return true;
             }
         }
@@ -94,25 +102,12 @@ public class Warehouse {
         return false;
     }
 
-    public int howManyInStock(String productName){
-        var productNameToCount = productName.toLowerCase().trim();
+
+    public int howManyInStock(Product productToCount){
         int count = 0;
 
         for (var product : products) {
-            if (product.getProductName().toLowerCase().equals(productNameToCount)) {
-                count++;
-
-            }
-        }
-        return count;
-    }
-
-    public int howManyInStock(int productId){
-        var productNameToCount = getProductNameFromId(productId);
-        int count = 0;
-
-        for (var product : products) {
-            if (product.getProductName().toLowerCase().equals(productNameToCount)) {
+            if (product == productToCount) {
                 count++;
 
             }
@@ -123,7 +118,7 @@ public class Warehouse {
     public String getProductNameFromId(int id){
         for (var product : products) {
             if (product.getProductId() == id){
-                return product.getProductName();
+                return product.getProductName().toLowerCase();
             }else{
                 return null;
             }
@@ -156,25 +151,29 @@ public class Warehouse {
         return null;
     }
 
-    // Check if a product is in the warehouse by object
+
     public boolean containsProduct(Product product) {
         return products.contains(product);
     }
 
-    // Remove a product by object
+
     public void removeProductByObject(Product product) {
         products.remove(product);
     }
 
-    public void removeProductFromWarehouse(Product product) {
-        products.remove(product);
+    private String capitalizeName(String name) {
+        String firstLetter = name.substring(0, 1).toUpperCase();
+        String theRest = name.substring(1);
+        return firstLetter + theRest;
+    }
+
+    public String getWarehouseNameCapitalized() {
+        return capitalizeName(warehouseName);
     }
 
     @Override
     public String toString() {
-        return "Warehouse{" +
-                "warehouseNumber=" + warehouseNumber +
-                ", warehouseLocation='" + warehouseLocation + '\'' +
-                '}';
+        return "Warehouse number " + warehouseId + ":" +
+                "\t" + warehouseName;
     }
 }

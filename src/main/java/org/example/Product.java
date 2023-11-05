@@ -10,12 +10,23 @@ public class Product {
     private String productDescription;
 
     public Product(String productName, double productPrice, String productDescription) {
-        this.productName = productName;
-        this.productPrice = BigDecimal.valueOf(productPrice);
-        this.productDescription = productDescription;
+        try {
+            if (productPrice < 0) {
+                throw new IllegalArgumentException("Price must be non-negative.");
+            }
+            this.productName = productName;
+            this.productPrice = BigDecimal.valueOf(productPrice);
+            this.productDescription = productDescription;
+        } catch (IllegalArgumentException e) {
+            System.err.println("Error creating product: " + e.getMessage());
+        }
     }
 
     public Product(String productName, int productId, double productPrice, String productDescription) {
+        if (productId < 0 || productPrice < 0) {
+            throw new IllegalArgumentException("Id and Price must be non-negative.");
+        }
+
         this.productName = productName;
         this.productId = productId;
         this.productPrice = BigDecimal.valueOf(productPrice);
@@ -56,11 +67,9 @@ public class Product {
 
     @Override
     public String toString() {
-        return "Product{" +
-                "productName='" + productName + '\'' +
-                ", productNumber=" + productId +
-                ", productPrice=" + productPrice +
-                ", productDescription='" + productDescription + '\'' +
-                '}';
+        return "ProductID: " + productId +
+                "\nProduct: " + productName +
+                "\nPrice: " + productPrice +
+                "\nDescription: " + productDescription;
     }
 }

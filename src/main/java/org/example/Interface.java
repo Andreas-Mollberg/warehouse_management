@@ -1,7 +1,5 @@
 package org.example;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class Interface {
@@ -21,67 +19,132 @@ public class Interface {
                     1. List all warehouses.
                     2. Show all products in a warehouse.
                     3. Create a new warehouse location.
-                    4. Product management.
-                    5. Exit Warehouse Manager.\s""");
+                    4. Transfer products between warehouses.
+                    5. Adjust stock of products in a warehouse.
+                    6. Product management.
+                    7. Exit Warehouse Manager.\s""");
 
-            System.out.println("Enter 1-5: ");
+            System.out.println("Enter 1-7: ");
             String userInput = scanner.nextLine();
-            int mainMenuSelection = Integer.parseInt(userInput);
 
-            switch (mainMenuSelection) {
-                case 1:
-                    manager.printAllWarehouses();
-                    break;
 
-                case 2:
-                    System.out.println("Which warehouse do you wish to display the inventory of? ");
-                    manager.printAllWarehouses();
+            try {
+                int mainMenuSelection = Integer.parseInt(userInput);
 
-                    System.out.println("Enter warehouse number or location: ");
-                    String numberOrLocation = scanner.nextLine();
+                if (mainMenuSelection < 1 || mainMenuSelection > 7) {
+                    System.err.println("Invalid input. Please enter a valid number between 1 and 7.");
+                    continue;
+                }
 
-                    if (numberOrLocation.matches("\\d+")) {
-                        int warehouseNumber = Integer.parseInt(numberOrLocation);
-                        Warehouse warehouse = manager.getWarehouse(warehouseNumber);
+                switch (mainMenuSelection) {
+                    case 1:
+                        manager.printAllWarehouses();
+                        break;
 
-                        if (warehouse != null) {
-                            System.out.println("Products in " + warehouse.getWarehouseLocation() + ":");
-                            warehouse.listAllProducts();
-                        } else {
-                            System.out.println("That warehouse cannot be found.");
-                        }
-                    } else {
-                        Warehouse warehouseLocation = manager.getWarehouse(numberOrLocation.toLowerCase());
-                        if (warehouseLocation != null) {
-                            System.out.println("Products in " + warehouseLocation.getWarehouseLocation() + ":");
-                            warehouseLocation.listAllProducts();
-                        } else {
-                            System.out.println("That warehouse cannot be found.");
-                        }
+                    case 2:
+                        System.out.println("Which warehouse do you wish to display the inventory of? ");
+                        manager.printAllWarehouses();
 
-                    }
-                    break;
+                        System.out.println("Enter warehouse number or name: ");
+                        String warehouseIdOrName = scanner.nextLine();
 
-                case 3:
-                    System.out.println("Enter number for the new warehouse: ");
-                    String inputNumber = scanner.nextLine();
-                    int newWarehouseNumber = Integer.parseInt(inputNumber);
-                    System.out.println("Enter the location of the new warehouse: ");
-                    String newWarehouseLocation = scanner.nextLine().trim();
+                        Warehouse selectedWarehouse = manager.getWarehouseFromIdOrName(warehouseIdOrName);
+                        selectedWarehouse.listAllProducts();
+                        break;
 
-                    Warehouse newWarehouse = new Warehouse(newWarehouseNumber, newWarehouseLocation);
-                    manager.addWarehouseToList(newWarehouse);
-                    break;
+                    case 3:
+                        createNewWarehouse();
+                        break;
 
-                case 4:
-                    productMenu();
-                    break;
+                    case 4:
+                        transferProduct();
+                        break;
 
-                case 5:
-                    return;
+                    case 5:
+                        adjustStockLevel();
+                        break;
+
+                    case 6:
+                        productMenu();
+                        break;
+
+                    case 7:
+                        return;
+                }
+
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid input. Please enter a valid number.");
             }
-
         }
+    }
+
+    private void createNewWarehouse() {
+        System.out.println("Enter ID for the new warehouse: ");
+        String inputNumber = scanner.nextLine();
+        int newWarehouseId = Integer.parseInt(inputNumber);
+        System.out.println("Enter the name of the new warehouse: ");
+        String newWarehouseName = scanner.nextLine().trim();
+        String newWarehouseNameFirstLetter = newWarehouseName.substring(0, 1).toUpperCase();
+        String restOfName = newWarehouseName.substring(1).toLowerCase();
+        newWarehouseName = newWarehouseNameFirstLetter + restOfName;
+
+        Warehouse newWarehouse = new Warehouse(newWarehouseId, newWarehouseName);
+        manager.addWarehouseToList(newWarehouse);
+    }
+
+    private void transferProduct() {
+        System.out.println("Which warehouse do you want to transfer from? ");
+        manager.printAllWarehouses();
+
+        System.out.println("Enter name or ID for the warehouse you wish to transfer from: ");
+        String fromWarehouseThisIdOrName = scanner.nextLine();
+
+        Warehouse sourceWarehouse = manager.getWarehouseFromIdOrName(fromWarehouseThisIdOrName);
+        sourceWarehouse.listAllProducts();
+
+
+        System.out.println("Enter ID or name of the product you wish to transfer: ");
+        String productIdOrName = scanner.nextLine().trim();
+        Product productToTransfer = manager.getProductByIdOrName(productIdOrName);
+
+        System.out.println("Enter the name or ID for the warehouse you would like" +
+                " to transfer the product into.");
+        manager.printAllWarehouses();
+        String toWarehouseThisIdOrName = scanner.nextLine();
+
+        Warehouse destinationWarehouse = manager.getWarehouseFromIdOrName(toWarehouseThisIdOrName);
+        manager.transferProductBetweenWarehouses(sourceWarehouse, destinationWarehouse, productToTransfer);
+        return;
+    }
+
+    private void adjustStockLevel() {
+        System.out.println("At which warehouse would you like to adjust the stocks? ");
+        manager.printAllWarehouses();
+
+        String selectedWarehouseIdOrName = scanner.nextLine();
+        Warehouse warehouseToAdjustStocksIn = manager.getWarehouseFromIdOrName(selectedWarehouseIdOrName);
+
+        System.out.println("Current inventory of " + warehouseToAdjustStocksIn.getWarehouseNameCapitalized());
+        warehouseToAdjustStocksIn.listAllProducts();
+
+        System.out.println("Enter ID or name of product you wish you adjust the stock level of: ");
+        var productToAdjustIdOrName = scanner.nextLine();
+
+        Product productToAdjust = manager.getProductByIdOrName(productToAdjustIdOrName);
+
+        System.out.println("Current stock of " + productToAdjust.getProductName() + " is: "
+                + warehouseToAdjustStocksIn.howManyInStock(productToAdjust));
+
+        System.out.println("Enter new total amount in stock: ");
+        String inputNewStockAmount = scanner.nextLine();
+        int newStockAmount = Integer.parseInt(inputNewStockAmount);
+
+        manager.adjustProductAmountInWarehouse(warehouseToAdjustStocksIn, productToAdjust, newStockAmount);
+
+        var currentStock = warehouseToAdjustStocksIn.howManyInStock(productToAdjust);
+
+        System.out.println("Current stock of " + productToAdjust.getProductName() + " at warehouse "
+                + warehouseToAdjustStocksIn.getWarehouseNameCapitalized() + " is: " + currentStock);
     }
 
     public void productMenu() {
@@ -92,9 +155,7 @@ public class Interface {
                     1. Add a new product
                     2. Remove a product
                     3. Search for product in all warehouses.
-                    4. Transfer products between warehouses.
-                    5. Adjust stock of products
-                    6. Go back to main menu.""");
+                    4. Go back to main menu.""");
 
             System.out.println("Enter 1-6: ");
             String userInput = scanner.nextLine();
@@ -102,109 +163,62 @@ public class Interface {
 
             switch (productMenuSelection) {
                 case 1:
-                    System.out.println("Enter the ID for the new product: ");
-                    String inputId = scanner.nextLine();
-                    int newProductId = Integer.parseInt(inputId);
-                    System.out.println("Enter the name of the new product: ");
-                    String newProductName = scanner.nextLine().trim();
-                    System.out.println("Enter the price of the new product: ");
-                    String inputValue = scanner.nextLine();
-                    double newProductPrice = Double.parseDouble(inputValue);
-                    System.out.println("Enter a description of the new product: ");
-                    String newProductDescription = scanner.nextLine().trim();
-
-                    Product newProduct = new Product(newProductName, newProductId, newProductPrice, newProductDescription);
-
-
-                    // Prompt the user to select a warehouse for the new product
-                    System.out.println("Enter the warehouse number or location to add the product to: ");
-                    String warehouseNumberOrLocation = scanner.nextLine();
-
-                    // Find the warehouse by number or location
-                    Warehouse targetWarehouse = manager.findWarehouse(warehouseNumberOrLocation);
-
-                    if (targetWarehouse != null) {
-                        // Add the new product to the specified warehouse
-                        manager.addProductToWarehouse(targetWarehouse, newProduct);
-                    } else {
-                        System.out.println("The specified warehouse was not found.");
-                    }
-
+                    addNewProduct();
                     break;
 
                 case 2:
-                    // Insert method to remove product from sqlite db here
+                    // Insert method to remove product
                     break;
 
                 case 3:
-                    System.out.println("ID or name of product you wish to search for: ");
-
-                    String idOrName = scanner.nextLine();
-                    if (idOrName.matches("\\d+")) {
-                        int productNumber = Integer.parseInt(idOrName);
-                        manager.searchAllWarehousesForProduct(idOrName);
-                    } else {
-                        manager.searchAllWarehousesForProduct(idOrName);
-                    }
+                    searchForProductInAllWarehouses();
                     break;
 
                 case 4:
-                    System.out.println("Which warehouse do you want to transfer from? ");
-                    manager.printAllWarehouses();
+                    return;
 
-                    System.out.println("Enter location or ID for the warehouse you wish to transfer from: ");
-                    String fromThisIdOrName = scanner.nextLine();
-                    Warehouse sourceWarehouse = null;
-
-                    if (fromThisIdOrName.matches("\\d+")) {
-                        // Input is a number (ID)
-                        int sourceWarehouseId = Integer.parseInt(fromThisIdOrName);
-                        sourceWarehouse = manager.findWarehouse(sourceWarehouseId);
-                    } else {
-                        // Input is a name
-                        sourceWarehouse = manager.findWarehouse(fromThisIdOrName.trim());
-                    }
-
-                    if (sourceWarehouse != null) {
-                        manager.printProductsInWarehouse(sourceWarehouse); // Display products in the selected warehouse
-                    } else {
-                        System.out.println("The specified warehouse was not found.");
-                    }
-
-
-                    System.out.println("Enter ID or name of the product you wish to transfer: ");
-                    String productIdOrName = scanner.nextLine().trim();
-                    Product productToTransfer = null;
-
-                    if (productIdOrName.matches("\\d+")) {
-                        int productId = Integer.parseInt(productIdOrName);
-                        productToTransfer = manager.findProduct(productId);
-                    }else{
-                        // Input is a name
-                        productToTransfer = manager.findProduct(productIdOrName);
-                    }
-
-                    manager.printAllWarehouses();
-                    String toThisIdOrName = scanner.nextLine();
-
-                    Warehouse destinationWarehouse = null;
-
-                    if (toThisIdOrName.matches("\\d+")) {
-                        // Input is a number (ID)
-                        int destinationWarehouseId = Integer.parseInt(toThisIdOrName);
-                        destinationWarehouse = manager.findWarehouse(destinationWarehouseId);
-                    } else {
-                        // Input is a name
-                        destinationWarehouse = manager.findWarehouse(toThisIdOrName.trim());
-                    }
-
-                    manager.transferProductBetweenWarehouses(sourceWarehouse, destinationWarehouse, productToTransfer);
-
-
+                default:
+                    System.out.println("Incorrect input. Input must be a number between 1 and 6.");
             }
             break;
+
         }
 
+    }
+
+    private void addNewProduct() {
+        System.out.println("Enter the ID for the new product: ");
+        String newPorudctId = scanner.nextLine();
+        int newProductId = Integer.parseInt(newPorudctId);
+        System.out.println("Enter the name of the new product: ");
+        String newProductName = scanner.nextLine().trim();
+        System.out.println("Enter the price of the new product: ");
+        String inputValue = scanner.nextLine();
+        double newProductPrice = Double.parseDouble(inputValue);
+        System.out.println("Enter a description of the new product: ");
+        String newProductDescription = scanner.nextLine().trim();
+
+        Product newProduct = new Product(newProductName, newProductId, newProductPrice, newProductDescription);
+
+
+        System.out.println("Enter the warehouse ID or name to add the product to: ");
+        manager.printAllWarehouses();
+
+        System.out.println("Enter warehouse ID or name: ");
+        String destinationWarehouseIdOrName = scanner.nextLine();
+
+        Warehouse warehouse = manager.getWarehouseFromIdOrName(destinationWarehouseIdOrName);
+
+        System.out.println(newProduct.getProductName() + " has been added into the stock of "
+                + warehouse.getWarehouseName());
+    }
+
+    private void searchForProductInAllWarehouses() {
+        System.out.println("ID or name of product you wish to search for: ");
+        String productIdOrName = scanner.nextLine();
+
+        Product productToFind = manager.getProductByIdOrName(productIdOrName);
+        manager.searchAndPrintProductInWarehouses(productToFind);
     }
 }
 

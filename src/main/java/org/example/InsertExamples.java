@@ -14,16 +14,22 @@ public class InsertExamples {
     }
 
     public static void addExampleProducts(WarehouseManager manager) {
-        // Assume that you already have existing warehouses
-        // and you don't need to create new ones here.
 
         Product product1 = new Product("iPhone 15", 1, 12000.00, "Apple iPhone 15");
         Product product2 = new Product("Galaxy S23", 2, 10000, "Samsung Galaxy S23");
         Product product3 = new Product("iPad Air", 3, 8000, "Apple iPad Air 2022");
 
-        // Add products to existing warehouses
+
         manager.addProductToWarehouse(manager.findWarehouse(1), product1);
+        manager.addProductToWarehouse(manager.findWarehouse(1), product2);
+        manager.addProductToWarehouse(manager.findWarehouse(1), product3);
+
+        manager.addProductToWarehouse(manager.findWarehouse(2), product1);
         manager.addProductToWarehouse(manager.findWarehouse(2), product2);
+        manager.addProductToWarehouse(manager.findWarehouse(2), product3);
+
+        manager.addProductToWarehouse(manager.findWarehouse(3), product1);
+        manager.addProductToWarehouse(manager.findWarehouse(3), product2);
         manager.addProductToWarehouse(manager.findWarehouse(3), product3);
     }
 
