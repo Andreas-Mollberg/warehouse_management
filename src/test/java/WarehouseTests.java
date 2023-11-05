@@ -32,21 +32,21 @@ public class WarehouseTests {
         warehouse.removeProductByIdFromWarehouse(1);
 
         // Check if the product was removed
-        assertEquals(1, warehouse.howManyInStock("iPhone 15"));
+        assertEquals(1, warehouse.howManyInStock(product1));
 
         // Remove a product that doesn't exist
         warehouse.removeProductByIdFromWarehouse(3);
 
         // Check if the count remains the same
-        assertEquals(1, warehouse.howManyInStock("iPhone 15"));
+        assertEquals(1, warehouse.howManyInStock(product1));
 
         // Add more products
         warehouse.addProductIntoWarehouse(product1);
         warehouse.addProductIntoWarehouse(product2);
 
         // Check if the counts have increased
-        assertEquals(2, warehouse.howManyInStock("iPhone 15"));
-        assertEquals(2, warehouse.howManyInStock("Galaxy S23"));
+        assertEquals(2, warehouse.howManyInStock(product1));
+        assertEquals(2, warehouse.howManyInStock(product2));
 
     }
 
@@ -68,8 +68,8 @@ public class WarehouseTests {
         warehouse.addProductIntoWarehouse(product2);
 
         // Check if products were added
-        assertEquals(2, warehouse.howManyInStock("iPhone 15"));
-        assertEquals(1, warehouse.howManyInStock("Galaxy S23"));
+        assertEquals(2, warehouse.howManyInStock(product1));
+        assertEquals(1, warehouse.howManyInStock(product2));
 
     }
 

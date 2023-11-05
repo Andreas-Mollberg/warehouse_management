@@ -1,7 +1,6 @@
 package org.example;
 
 import java.math.BigDecimal;
-import java.util.Currency;
 
 public class Product {
     private String productName;
@@ -9,13 +8,14 @@ public class Product {
     private BigDecimal productPrice;
     private String productDescription;
 
-    public Product(String productName, double productPrice, String productDescription) {
-        this.productName = productName;
-        this.productPrice = BigDecimal.valueOf(productPrice);
-        this.productDescription = productDescription;
-    }
-
     public Product(String productName, int productId, double productPrice, String productDescription) {
+        if (productId < 0) {
+            throw new IllegalArgumentException("Product ID must be non-negative.");
+        }
+        if (productPrice < 0) {
+            throw new IllegalArgumentException("Product price must be non-negative.");
+        }
+
         this.productName = productName;
         this.productId = productId;
         this.productPrice = BigDecimal.valueOf(productPrice);
@@ -32,10 +32,6 @@ public class Product {
 
     public int getProductId() {
         return productId;
-    }
-
-    public void setProductId(int productId) {
-        this.productId = productId;
     }
 
     public BigDecimal getProductPrice() {
@@ -56,11 +52,9 @@ public class Product {
 
     @Override
     public String toString() {
-        return "Product{" +
-                "productName='" + productName + '\'' +
-                ", productNumber=" + productId +
-                ", productPrice=" + productPrice +
-                ", productDescription='" + productDescription + '\'' +
-                '}';
+        return "ProductID: " + productId +
+                "\nProduct: " + productName +
+                "\nPrice: " + productPrice +
+                "\nDescription: " + productDescription;
     }
 }

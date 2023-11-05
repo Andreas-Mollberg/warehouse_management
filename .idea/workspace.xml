@@ -5,18 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2c488cf1-967e-4112-a865-f05d7461f01d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/InsertExamples.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Interface.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Product.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Warehouse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/WarehouseManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/WarehouseManagerTests.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/WarehouseTests.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/products.db" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/ProductDatabase.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/WarehouseDatabase.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/warehouses.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/InsertExamples.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/InsertExamples.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Interface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Interface.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Product.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Product.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Warehouse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Warehouse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/WarehouseManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/WarehouseManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/WarehouseTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/WarehouseTests.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

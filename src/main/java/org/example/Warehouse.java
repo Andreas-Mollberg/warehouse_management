@@ -1,180 +1,99 @@
 package org.example;
 
 import java.util.ArrayList;
-
+import java.util.HashMap;
+import java.util.Map;
 
 public class Warehouse {
-    private int warehouseNumber;
-    private String warehouseLocation;
+    private int warehouseId;
+    private String warehouseName;
     private ArrayList<Product> products;
 
-    public Warehouse(int warehouseNumber, String warehouseLocation) {
-        this.warehouseNumber = warehouseNumber;
-        this.warehouseLocation = warehouseLocation;
+    public Warehouse(String warehouseName) {
+        this.warehouseId = warehouseId;
+        this.warehouseName = capitalizeName(warehouseName);
         this.products = new ArrayList<>();
     }
 
-    public int getWarehouseNumber() {
-        return warehouseNumber;
+    public Warehouse(int warehouseId, String warehouseName) {
+        this.warehouseId = warehouseId;
+        this.warehouseName = capitalizeName(warehouseName);
+        this.products = new ArrayList<>();
     }
 
-    public void setWarehouseNumber(int warehouseNumber) {
-        this.warehouseNumber = warehouseNumber;
+    public int getWarehouseId() {
+        return warehouseId;
     }
 
-    public String getWarehouseLocation() {
-        return warehouseLocation.toLowerCase();
+    public void setWarehouseId(int warehouseId) {
+        this.warehouseId = warehouseId;
     }
 
-    public void setWarehouseLocation(String warehouseLocation) {
-        this.warehouseLocation = warehouseLocation;
-    }
-
-    public void listAllProducts() {
-        for (var product : products) {
-            System.out.println(product);
-
-        }
+    public String getWarehouseName() {
+        return warehouseName;
     }
 
     public ArrayList<Product> getAllProducts() {
         return products;
     }
 
-    /**
-     * Adds a product to the warhouse stock
-     *
-     * @param productToAdd The product to add to the warehouse stock
-     */
+    public Product getProductByIdOrName(String idOrName) {
+        for (Product product : products) {
+            if (String.valueOf(product.getProductId()).equals(idOrName) || product.getProductName().equalsIgnoreCase(idOrName)) {
+                return product;
+            }
+        }
+        return null;
+    }
+
+    public void listAllProducts() {
+        Map<Product, Integer> productCounts = new HashMap<>();
+
+        for (Product product : products) {
+            productCounts.put(product, productCounts.getOrDefault(product, 0) + 1);
+        }
+
+        for (Map.Entry<Product, Integer> entry : productCounts.entrySet()) {
+            Product product = entry.getKey();
+            int count = entry.getValue();
+
+            System.out.println(product);
+            System.out.println("Amount in stock: " + count + "\n");
+        }
+    }
+
     public void addProductIntoWarehouse(Product productToAdd) {
         products.add(productToAdd);
-
-    }
-
-    /**
-     * Removes one product with the specified id
-     *
-     * @param id The product id to remove
-     */
-
-    public void removeProductByIdFromWarehouse(int id) {
-        for (int i = 0; i < products.size(); i++) {
-            Product product = products.get(i);
-
-            if (product.getProductId() == id) {
-                products.remove(i);
-                return;
-            }
-
-        }
-    }
-
-    public boolean searchForProduct(String name) {
-        var nameToSearchFor = name.toLowerCase().trim();
-
-        for (int i = 0; i < products.size(); i++) {
-            Product product = products.get(i);
-
-            if (product.getProductName().toLowerCase().equals(nameToSearchFor)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean searchForProduct(int number) {
-
-        for (int i = 0; i < products.size(); i++) {
-            Product product = products.get(i);
-
-            if (product.getProductId() == number) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public int howManyInStock(String productName){
-        var productNameToCount = productName.toLowerCase().trim();
-        int count = 0;
-
-        for (var product : products) {
-            if (product.getProductName().toLowerCase().equals(productNameToCount)) {
-                count++;
-
-            }
-        }
-        return count;
-    }
-
-    public int howManyInStock(int productId){
-        var productNameToCount = getProductNameFromId(productId);
-        int count = 0;
-
-        for (var product : products) {
-            if (product.getProductName().toLowerCase().equals(productNameToCount)) {
-                count++;
-
-            }
-        }
-        return count;
-    }
-
-    public String getProductNameFromId(int id){
-        for (var product : products) {
-            if (product.getProductId() == id){
-                return product.getProductName();
-            }else{
-                return null;
-            }
-
-        }
-        return null;
-    }
-
-    public Product getProductObject(int id){
-        for (var product : products) {
-            if (product.getProductId() == id){
-                return product;
-            }else{
-                return null;
-            }
-
-        }
-        return null;
-    }
-
-    public Product getProductObject(String name){
-        for (var product : products) {
-            if (product.getProductName().equalsIgnoreCase(name)){
-                return product;
-            }else{
-                return null;
-            }
-
-        }
-        return null;
-    }
-
-    // Check if a product is in the warehouse by object
-    public boolean containsProduct(Product product) {
-        return products.contains(product);
-    }
-
-    // Remove a product by object
-    public void removeProductByObject(Product product) {
-        products.remove(product);
     }
 
     public void removeProductFromWarehouse(Product product) {
         products.remove(product);
     }
 
+    public int howManyInStock(Product productToCount) {
+        int count = 0;
+        for (Product product : products) {
+            if (product.equals(productToCount)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private String capitalizeName(String name) {
+        String firstLetter = name.substring(0, 1).toUpperCase();
+        String theRest = name.substring(1);
+        return firstLetter + theRest;
+    }
+
+    public String getWarehouseNameCapitalized() {
+        return capitalizeName(warehouseName);
+    }
+
     @Override
     public String toString() {
-        return "Warehouse{" +
-                "warehouseNumber=" + warehouseNumber +
-                ", warehouseLocation='" + warehouseLocation + '\'' +
-                '}';
+        return "Warehouse number " + warehouseId + ":\t" + warehouseName;
     }
+
+
 }
