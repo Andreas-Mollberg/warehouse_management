@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public class WarehouseManager {
     private List<Warehouse> warehouses = new ArrayList<>();
-    ;
+
 
     /**
      * Adds a new warehouse to the list of all warehouses
@@ -52,10 +52,6 @@ public class WarehouseManager {
      */
     public void addProductToWarehouse(Warehouse destinationWarehouse, Product productToAdd) {
         destinationWarehouse.addProductIntoWarehouse(productToAdd);
-    }
-
-    public void removeProductFromWarehouse(Warehouse warehouse, Product productToRemove) {
-        warehouse.removeProductByObject(productToRemove);
     }
 
     public void transferProductBetweenWarehouses(Warehouse sourceWarehouse, Warehouse destinationWarehouse, Product productToTransfer) {
@@ -170,26 +166,6 @@ public class WarehouseManager {
 
     }
 
-
-    public Warehouse findWarehouse(int id) {
-        for (Warehouse warehouse : warehouses) {
-            if (warehouse.getWarehouseId() == id) {
-                return warehouse;
-            }
-        }
-        return null; // Warehouse not found
-    }
-
-    public Warehouse findWarehouse(String name) {
-        for (Warehouse warehouse : warehouses) {
-            if (warehouse.getWarehouseName().equalsIgnoreCase(name)) {
-                return warehouse;
-            }
-        }
-        return null; // Warehouse not found
-    }
-
-
     public Product findProduct(int productId) {
         for (Warehouse warehouse : warehouses) {
             for (Product product : warehouse.getAllProducts()) {
@@ -215,10 +191,7 @@ public class WarehouseManager {
     public Product getProductByIdOrName(String productIdOrName) {
         if (productIdOrName.matches("\\d+")) {
             int productId = Integer.parseInt(productIdOrName);
-            var productToFind = findProduct(productId);
-            if (productToFind != null) {
-                return productToFind;
-            }
+            return findProduct(productId);
 
         } else {
 
@@ -226,7 +199,6 @@ public class WarehouseManager {
             return findProduct(productIdOrName);
 
         }
-        return null;
 
     }
 

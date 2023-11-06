@@ -3,7 +3,7 @@ package org.example;
 import java.util.Scanner;
 
 public class Interface {
-    Scanner scanner = new Scanner(System.in);
+    private static Scanner scanner = new Scanner(System.in);
 
     private WarehouseManager manager;
 
@@ -13,7 +13,7 @@ public class Interface {
 
     public void mainMenu() {
         while (true) {
-            System.out.println("*** Warhouse Manager ***\n");
+            System.out.println("*** Warehouse Manager ***\n");
 
             System.out.println("""
                     1. List all warehouses.
@@ -43,12 +43,8 @@ public class Interface {
 
                     case 2:
                         System.out.println("Which warehouse do you wish to display the inventory of? ");
-                        manager.printAllWarehouses();
+                        Warehouse selectedWarehouse = getTargetWarehouse();
 
-                        System.out.println("Enter warehouse number or name: ");
-                        String warehouseIdOrName = scanner.nextLine();
-
-                        Warehouse selectedWarehouse = manager.getWarehouseFromIdOrName(warehouseIdOrName);
                         selectedWarehouse.listAllProducts();
                         break;
 
@@ -80,8 +76,7 @@ public class Interface {
 
     private void createNewWarehouse() {
         System.out.println("Enter ID for the new warehouse: ");
-        String inputNumber = scanner.nextLine();
-        int newWarehouseId = Integer.parseInt(inputNumber);
+        int newWarehouseId = createNewWarehouseId();
         System.out.println("Enter the name of the new warehouse: ");
         String newWarehouseName = scanner.nextLine().trim();
         String newWarehouseNameFirstLetter = newWarehouseName.substring(0, 1).toUpperCase();
@@ -92,49 +87,41 @@ public class Interface {
         manager.addWarehouseToList(newWarehouse);
     }
 
+    private int createNewWarehouseId() {
+        String inputNumber = scanner.nextLine();
+        return Integer.parseInt(inputNumber);
+    }
+
     private void transferProduct() {
         System.out.println("Which warehouse do you want to transfer from? ");
-        manager.printAllWarehouses();
-
-        System.out.println("Enter name or ID for the warehouse you wish to transfer from: ");
-        String fromWarehouseThisIdOrName = scanner.nextLine();
-
-        Warehouse sourceWarehouse = manager.getWarehouseFromIdOrName(fromWarehouseThisIdOrName);
+        Warehouse sourceWarehouse = getTargetWarehouse();
         sourceWarehouse.listAllProducts();
 
-
-        System.out.println("Enter ID or name of the product you wish to transfer: ");
-        String productIdOrName = scanner.nextLine().trim();
-        Product productToTransfer = manager.getProductByIdOrName(productIdOrName);
+        Product productToTransfer = getTargetProduct();
 
         System.out.println("Enter the name or ID for the warehouse you would like" +
                 " to transfer the product into.");
-        manager.printAllWarehouses();
-        String toWarehouseThisIdOrName = scanner.nextLine();
+        Warehouse destinationWarehouse = getTargetWarehouse();
 
-        Warehouse destinationWarehouse = manager.getWarehouseFromIdOrName(toWarehouseThisIdOrName);
         manager.transferProductBetweenWarehouses(sourceWarehouse, destinationWarehouse, productToTransfer);
-        return;
     }
 
     private void adjustStockLevel() {
         System.out.println("At which warehouse would you like to adjust the stocks? ");
-        manager.printAllWarehouses();
-
-        String selectedWarehouseIdOrName = scanner.nextLine();
-        Warehouse warehouseToAdjustStocksIn = manager.getWarehouseFromIdOrName(selectedWarehouseIdOrName);
+        Warehouse warehouseToAdjustStocksIn = getTargetWarehouse();
 
         System.out.println("Current inventory of " + warehouseToAdjustStocksIn.getWarehouseNameCapitalized());
         warehouseToAdjustStocksIn.listAllProducts();
 
-        System.out.println("Enter ID or name of product you wish you adjust the stock level of: ");
-        var productToAdjustIdOrName = scanner.nextLine();
-
-        Product productToAdjust = manager.getProductByIdOrName(productToAdjustIdOrName);
+        Product productToAdjust = getTargetProduct();
 
         System.out.println("Current stock of " + productToAdjust.getProductName() + " is: "
                 + warehouseToAdjustStocksIn.howManyInStock(productToAdjust));
 
+        adjustStockOfProductInWarehouse(warehouseToAdjustStocksIn, productToAdjust);
+    }
+
+    private void adjustStockOfProductInWarehouse(Warehouse warehouseToAdjustStocksIn, Product productToAdjust) {
         System.out.println("Enter new total amount in stock: ");
         String inputNewStockAmount = scanner.nextLine();
         int newStockAmount = Integer.parseInt(inputNewStockAmount);
@@ -147,6 +134,13 @@ public class Interface {
                 + warehouseToAdjustStocksIn.getWarehouseNameCapitalized() + " is: " + currentStock);
     }
 
+    private Product getTargetProduct() {
+        System.out.println("Enter ID or name of product you wish you adjust the stock level of: ");
+        var productToAdjustIdOrName = scanner.nextLine();
+
+        return manager.getProductByIdOrName(productToAdjustIdOrName);
+    }
+
     public void productMenu() {
         while (true) {
             System.out.println("***Product Manager***\n");
@@ -157,7 +151,7 @@ public class Interface {
                     3. Search for product in all warehouses.
                     4. Go back to main menu.""");
 
-            System.out.println("Enter 1-6: ");
+            System.out.println("Enter 1-4: ");
             String userInput = scanner.nextLine();
             int productMenuSelection = Integer.parseInt(userInput);
 
@@ -187,30 +181,51 @@ public class Interface {
     }
 
     private void addNewProduct() {
-        System.out.println("Enter the ID for the new product: ");
-        String newPorudctId = scanner.nextLine();
-        int newProductId = Integer.parseInt(newPorudctId);
-        System.out.println("Enter the name of the new product: ");
-        String newProductName = scanner.nextLine().trim();
-        System.out.println("Enter the price of the new product: ");
-        String inputValue = scanner.nextLine();
-        double newProductPrice = Double.parseDouble(inputValue);
-        System.out.println("Enter a description of the new product: ");
-        String newProductDescription = scanner.nextLine().trim();
+        int newProductId = getNewProductId();
+        String newProductName = getNewProductName();
+        double newProductPrice = getNewProductPrice();
+        String newProductDescription = getNewProductDescription();
 
         Product newProduct = new Product(newProductName, newProductId, newProductPrice, newProductDescription);
 
-
         System.out.println("Enter the warehouse ID or name to add the product to: ");
+        Warehouse warehouseToAddProductInto = getTargetWarehouse();
+
+        manager.addProductToWarehouse(warehouseToAddProductInto, newProduct);
+
+        System.out.println(newProduct.getProductName() + " has been added into the stock of "
+                + warehouseToAddProductInto.getWarehouseName());
+    }
+
+    private Warehouse getTargetWarehouse() {
         manager.printAllWarehouses();
 
         System.out.println("Enter warehouse ID or name: ");
         String destinationWarehouseIdOrName = scanner.nextLine();
 
-        Warehouse warehouse = manager.getWarehouseFromIdOrName(destinationWarehouseIdOrName);
+        return manager.getWarehouseFromIdOrName(destinationWarehouseIdOrName);
+    }
 
-        System.out.println(newProduct.getProductName() + " has been added into the stock of "
-                + warehouse.getWarehouseName());
+    private String getNewProductDescription() {
+        System.out.println("Enter a description of the new product: ");
+        return scanner.nextLine().trim();
+    }
+
+    private double getNewProductPrice() {
+        System.out.println("Enter the price of the new product: ");
+        String inputValue = scanner.nextLine();
+        return Double.parseDouble(inputValue);
+    }
+
+    private String getNewProductName() {
+        System.out.println("Enter the name of the new product: ");
+        return scanner.nextLine().trim();
+    }
+
+    private int getNewProductId() {
+        System.out.println("Enter the ID for the new product: ");
+        String newProductIdAsString = scanner.nextLine();
+        return Integer.parseInt(newProductIdAsString);
     }
 
     private void searchForProductInAllWarehouses() {

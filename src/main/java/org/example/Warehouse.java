@@ -24,16 +24,8 @@ public class Warehouse {
         return warehouseId;
     }
 
-    public void setWarehouseId(int warehouseId) {
-        this.warehouseId = warehouseId;
-    }
-
     public String getWarehouseName() {
         return warehouseName.toLowerCase();
-    }
-
-    public void setWarehouseName(String warehouseName) {
-        this.warehouseName = warehouseName;
     }
 
     public void listAllProducts() {
@@ -48,7 +40,7 @@ public class Warehouse {
     }
 
     /**
-     * Adds a product to the warhouse stock
+     * Adds a product to the warehouse stock
      *
      * @param productToAdd The product to add to the warehouse stock
      */
@@ -77,30 +69,6 @@ public class Warehouse {
         }
     }
 
-    public boolean searchForProduct(String name) {
-        var nameToSearchFor = name.toLowerCase().trim();
-
-        for (int i = 0; i < products.size(); i++) {
-            Product product = products.get(i);
-
-            if (product.getProductName().equalsIgnoreCase(nameToSearchFor)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean searchForProduct(int number) {
-
-        for (int i = 0; i < products.size(); i++) {
-            Product product = products.get(i);
-
-            if (product.getProductId() == number) {
-                return true;
-            }
-        }
-        return false;
-    }
 
 
     public int howManyInStock(Product productToCount){
@@ -114,48 +82,6 @@ public class Warehouse {
         }
         return count;
     }
-
-    public String getProductNameFromId(int id){
-        for (var product : products) {
-            if (product.getProductId() == id){
-                return product.getProductName().toLowerCase();
-            }else{
-                return null;
-            }
-
-        }
-        return null;
-    }
-
-    public Product getProductObject(int id){
-        for (var product : products) {
-            if (product.getProductId() == id){
-                return product;
-            }else{
-                return null;
-            }
-
-        }
-        return null;
-    }
-
-    public Product getProductObject(String name){
-        for (var product : products) {
-            if (product.getProductName().equalsIgnoreCase(name)){
-                return product;
-            }else{
-                return null;
-            }
-
-        }
-        return null;
-    }
-
-
-    public boolean containsProduct(Product product) {
-        return products.contains(product);
-    }
-
 
     public void removeProductByObject(Product product) {
         products.remove(product);

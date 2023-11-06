@@ -8,10 +8,5 @@ public class Main {
         InsertExamples.addExampleProducts(manager);
 
         menu.mainMenu();
-
-
-
-
-
     }
 }

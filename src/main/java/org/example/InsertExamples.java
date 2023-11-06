@@ -1,7 +1,5 @@
 package org.example;
 
-import java.util.ArrayList;
-
 public class InsertExamples {
     public static void addExampleWarehouses(WarehouseManager manager){
         Warehouse warehouse1 = new Warehouse(1, "Stockholm");
@@ -20,17 +18,18 @@ public class InsertExamples {
         Product product3 = new Product("iPad Air", 3, 8000, "Apple iPad Air 2022");
 
 
-        manager.addProductToWarehouse(manager.findWarehouse(1), product1);
-        manager.addProductToWarehouse(manager.findWarehouse(1), product2);
-        manager.addProductToWarehouse(manager.findWarehouse(1), product3);
 
-        manager.addProductToWarehouse(manager.findWarehouse(2), product1);
-        manager.addProductToWarehouse(manager.findWarehouse(2), product2);
-        manager.addProductToWarehouse(manager.findWarehouse(2), product3);
+        manager.addProductToWarehouse(manager.getWarehouseFromIdOrName("1"), product1);
+        manager.addProductToWarehouse(manager.getWarehouseFromIdOrName("1"), product2);
+        manager.addProductToWarehouse(manager.getWarehouseFromIdOrName("1"), product3);
 
-        manager.addProductToWarehouse(manager.findWarehouse(3), product1);
-        manager.addProductToWarehouse(manager.findWarehouse(3), product2);
-        manager.addProductToWarehouse(manager.findWarehouse(3), product3);
+        manager.addProductToWarehouse(manager.getWarehouseFromIdOrName("2"), product1);
+        manager.addProductToWarehouse(manager.getWarehouseFromIdOrName("2"), product2);
+        manager.addProductToWarehouse(manager.getWarehouseFromIdOrName("2"), product3);
+
+        manager.addProductToWarehouse(manager.getWarehouseFromIdOrName("3"), product1);
+        manager.addProductToWarehouse(manager.getWarehouseFromIdOrName("3"), product2);
+        manager.addProductToWarehouse(manager.getWarehouseFromIdOrName("3"), product3);
     }
 
 
