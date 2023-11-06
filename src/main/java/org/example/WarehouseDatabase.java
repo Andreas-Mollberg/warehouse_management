@@ -9,10 +9,10 @@ public class WarehouseDatabase {
 
     public WarehouseDatabase(String dbUrl) {
         this.dbUrl = dbUrl;
-        createTable();
+        createTable(dbUrl);
     }
 
-    public void createTable() {
+    public void createTable(String dbUrl) {
         String sql = "CREATE TABLE IF NOT EXISTS warehouses (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "warehouseName TEXT NOT NULL)";
